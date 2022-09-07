@@ -1,8 +1,8 @@
 {
-    "name": "InputDataset",
+    "name": "ds_input",
     "properties": {
         "linkedServiceName": {
-            "referenceName": "AzureBlobStorage1",
+            "referenceName": "ls_azureblobstorage",
             "type": "LinkedServiceReference"
         },
         "annotations": [],
