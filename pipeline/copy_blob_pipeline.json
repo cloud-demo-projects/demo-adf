@@ -35,13 +35,13 @@
                 },
                 "inputs": [
                     {
-                        "referenceName": "InputDataset",
+                        "referenceName": "ds_input",
                         "type": "DatasetReference"
                     }
                 ],
                 "outputs": [
                     {
-                        "referenceName": "Outputdataset",
+                        "referenceName": "ds_output",
                         "type": "DatasetReference"
                     }
                 ]
