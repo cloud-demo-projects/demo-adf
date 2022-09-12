@@ -45,7 +45,7 @@ stages:
             pip3 install --user yamllint
             npm install markdownlint-cli -g
             npm install @prantlf/jsonlint -g
-            
+
       - task: AzureCLI@2
         name: GlobalTests
         displayName: Run global tests
@@ -54,9 +54,9 @@ stages:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: |  
-            python3 ./demo-adf/iac/tests/python/test-iac.py
-            
+          inlineScript: |
+            python3 demo-adf/iac/tests/python/test-iac.py
+
       - task: PublishTestResults@2
         displayName: Publish Test Results
         inputs:
@@ -77,7 +77,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            find / -name '*.json' -print0 | xargs -0 -n1 jsonlint
+            find demo-adf/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
 
       - task: AzureCLI@2
         name: YMLLinter
