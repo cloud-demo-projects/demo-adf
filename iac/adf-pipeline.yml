@@ -128,7 +128,7 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
-                        --name AppPLEdeployment --resource-group $(ResourceGroupName) \
+                        --name AdfDeployment --resource-group $(ResourceGroupName) \
                         --template-file iac/bicep/DataFactory/Umi.bicep \
                               --parameters  identityName=$(identityName) )
 
@@ -143,7 +143,7 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
-                        --name AppPLEdeployment --resource-group $(ResourceGroupName) \
+                        --name AdfDeployment --resource-group $(ResourceGroupName) \
                         --template-file iac/bicep/DataFactory/DataFactory.bicep \
                               --parameters  userManagedIdentity=$(userManagedIdentity) \
                                   identityName=$(identityName) \
