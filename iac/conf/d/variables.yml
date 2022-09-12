@@ -3,7 +3,7 @@ variables:
   resourceGroupName: 'adf-demo'
   templateFile: 'iac/bicep/main.bicep'
   identityName: 'adf-umi'
-  userManagedIdentity: '/subscriptions/bf0f6779-86d2-467e-8226-10f92a8ad378/resourcegroups/adf-demo/providers/Microsoft.ManagedIdentity/userAssignedIdentities/adf-umi'
+  userManagedIdentity: '/subscriptions/bf0f6779-86d2-467e-8226-10f92a8ad378/resourcegroups/adf-demo/providers/Microsoft.ManagedIdentity/userAssignedIdentities/'
   keyName: 'adf-key'
   vaultBaseUrl: 'adf-vaultUrl'
   FactoryName: 'adf-demo'
