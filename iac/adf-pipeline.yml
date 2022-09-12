@@ -45,6 +45,28 @@ stages:
             pip3 install --user yamllint
             npm install markdownlint-cli -g
             npm install @prantlf/jsonlint -g
+            
+      - task: AzureCLI@2
+        name: GlobalTests
+        displayName: Run global tests
+        condition: true
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |  
+            python3 ./demo-adf/iac/tests/python/test-iac.py
+            
+      - task: PublishTestResults@2
+        displayName: Publish Test Results
+        inputs:
+          testRunTitle: 'Global Module Tests'
+          testResultsFormat: JUnit
+          testResultsFiles: '*.xml'
+          failTaskOnFailedTests: true
+          searchFolder: 'dist/test-results'
+        continueOnError: false
+        condition: succeededOrFailed()
 
       - task: AzureCLI@2
         name: JSONLinter
