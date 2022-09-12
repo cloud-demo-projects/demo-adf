@@ -75,6 +75,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
+            find iac/ -name '*.json' -print0
             find iac/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
 
       - task: AzureCLI@2
