@@ -46,6 +46,17 @@ stages:
             npm install markdownlint-cli -g
             npm install @prantlf/jsonlint -g
             
+      - task: AzureCLI@2
+        name: IaCLinter
+        displayName: IaC Linter
+        condition: true
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |            
+            az bicep build --file ./$(Build.Repository.Name)/iac
+            
 # - stage: Build
 #   jobs:
 #   - job: BuildCode
