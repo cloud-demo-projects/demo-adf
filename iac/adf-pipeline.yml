@@ -14,7 +14,7 @@ parameters:
   - p
   
 variables:
-- template: iac/conf/${{ parameters.environment }}/variables.yaml
+- template: conf/${{ parameters.environment }}/variables.yaml
 
 pool: Azure Pipelines
 
