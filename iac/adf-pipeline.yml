@@ -12,7 +12,7 @@ parameters:
   - t
   - a
   - p
-  
+
 variables:
 - template: conf/${{ parameters.environment }}/variables.yml
 
@@ -21,7 +21,7 @@ pool: Azure Pipelines
 stages:
 - stage: StaticChecks
   displayName: "Static Checks"
-  jobs: 
+  jobs:
   - job: StaticValidation
     displayName: Static validation
     pool:
@@ -45,7 +45,7 @@ stages:
             pip3 install --user yamllint
             npm install markdownlint-cli -g
             npm install @prantlf/jsonlint -g
-            
+
       - task: AzureCLI@2
         name: JSONLinter
         displayName: JSON Linter
@@ -54,9 +54,9 @@ stages:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: |            
+          inlineScript: |
             find iac/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
-            
+
       - task: AzureCLI@2
         name: YMLLinter
         displayName: YAML Linter
@@ -64,10 +64,9 @@ stages:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: |           
-
+          inlineScript: |
             find iac/ -name '*.yml' -print0 | xargs -0 -n1 yamllint
-            
+
 # - stage: Build
 #   jobs:
 #   - job: BuildCode
