@@ -119,7 +119,7 @@ stages:
         deploy:
           steps:
             - checkout: self
-            
+
             - task: AzureCLI@2
               name: DeployUmiADF
               displayName: Deploy User Assigned Manged Identity Bicep file
@@ -135,6 +135,7 @@ stages:
                               --parameters  identityName=$(identityName) )
 
                   echo $deploymentOutput
+                  
             - task: AzureCLI@2
               name: DeployBicepFileADF
               displayName: Deploy ADF Bicep file
