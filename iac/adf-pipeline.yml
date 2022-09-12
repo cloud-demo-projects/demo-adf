@@ -51,7 +51,7 @@ stages:
         displayName: JSON Linter
         condition: true
         inputs:
-          azureSubscription: $(ResourceGroupName)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |            
