@@ -47,15 +47,15 @@ stages:
             npm install @prantlf/jsonlint -g
             
       - task: AzureCLI@2
-        name: IaCLinter
-        displayName: IaC Linter
-        condition: true
+        name: YMLLinter
+        displayName: YAML Linter
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
-          inlineScript: |            
-            az bicep build --file ./$(Build.Repository.Name)/iac
+          inlineScript: |           
+
+            find ./$(Build.Repository.Name) -name '*.yml' -print0 | xargs -0 -n1 yamllint
             
 # - stage: Build
 #   jobs:
