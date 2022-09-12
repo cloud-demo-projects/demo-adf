@@ -14,7 +14,7 @@ parameters:
   - p
   
 variables:
-- template: conf/${{ parameters.environment }}/variables.yaml
+- template: conf/${{ parameters.environment }}/variables.yml
 
 pool: Azure Pipelines
 
