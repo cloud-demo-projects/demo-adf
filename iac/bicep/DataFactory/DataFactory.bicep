@@ -1,64 +1,43 @@
-//targetScope = 'subscription'
+@minLength(3)
+@maxLength(63)
+@description('The name of the Azure Data Factory.')
+param FactoryName string 
 
-@description('The Azure env into which the resources should be deployed.')
-param environmentType string = 'development'
-
-@description('The Azure rg into which the resources should be deployed.')
-@maxLength(13)
-param rgName string
-
-@description('The Azure rg into which the resources should be deployed.')
+@description('The location of the Virtual Machine.')
 param location string = resourceGroup().location
 
-@description('The Azure KV into which the resources should be deployed.')
-param keyVaultName string
+ @description('The location of the Virtual Machine.')
+ param vaultBaseUrl string 
 
-@description('The SQL Server into which the DB should be deployed.')
-param sqlServerName string
+@description('The name of the key with Get, Unwrap key and Wrap key permissions.')
+param keyName string 
 
-@description('The SQL Server Database into which data should be stored.')
-param sqlServerDBName string
+@description('The current version of the ADF key.')
+param keyVersion string = 'd26e0c21fd0446e7aada06f04ec1103f'
 
-resource resourceGrp 'Microsoft.Resources/resourceGroups@2020-06-01' existing = {
-  name: rgName
-  scope: subscription()
-}
+@description('The name of the user assigned identity.')
+param identityName string 
 
-module keyVaultModule 'modules/keyVault.bicep' = {
-  name: 'keyVaultModuleDeploy'
-  params: {
-    keyVaultName: keyVaultName
-    location: location
+@description('userManagedIdentity resource id to be lined with DataFactory.')
+param userManagedIdentity string 
+
+resource ADF 'Microsoft.DataFactory/factories@2018-06-01' = {
+  name: FactoryName
+  location: location
+    identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {'${userManagedIdentity}${identityName}': {}
+    }
   }
-  dependsOn: [
-    resourceGrp
-  ]
-}
-
-module storageAccountModule 'modules/storageAccount.bicep' = {
-  name: 'storageAccountModuleDeploy'
-  params: {
-    environmentType: environmentType
-    location: location
-  }
-}
-
-module storageBlobModule 'modules/storageBlob.bicep' = {
-  name: 'storageBlobModuleDeploy'
-  params: {
-    sacName: storageAccountModule.outputs.sacName
-  }
-  dependsOn: [
-    storageAccountModule
-  ]
-}
-
-module sqlServerModule 'modules/sqlServer.bicep' = {
-  name: 'sqlServerModuleDeploy'
-  params: {
-    sqlServerName: sqlServerName
-    sqlServerDBName: sqlServerDBName
-    location: location
+  properties: {
+    encryption: {
+      identity: {
+        userAssignedIdentity: '${userManagedIdentity}${identityName}'
+      }
+      vaultBaseUrl: vaultBaseUrl
+      keyName: keyName
+      keyVersion: keyVersion
+    }
+    publicNetworkAccess: 'Disabled'
   }
 }
-
