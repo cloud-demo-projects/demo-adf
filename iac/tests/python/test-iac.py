@@ -2,7 +2,7 @@ import random
 import glob
 import unittest
 import os
-
+import xmlrunner
 
 class TestModule(unittest.TestCase):
 
@@ -25,4 +25,4 @@ class TestModule(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main(
         testRunner=xmlrunner.XMLTestRunner(output='dist/test-results'),
-        failfast=False, buffer=False, catchbreak=False) 
+        failfast=False, buffer=False, catchbreak=False)
