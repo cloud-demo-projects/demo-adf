@@ -19,6 +19,33 @@ variables:
 pool: Azure Pipelines
 
 stages:
+- stage: StaticChecks
+  displayName: "Static Checks"
+  jobs: 
+  - job: StaticValidation
+    displayName: Static validation
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'ubuntu-latest'
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        name: SetupAgentSoftwares
+        displayName: "Setup agent softwares"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            mkdir -p dist
+            mkdir -p dist/test-results
+            pip3 install pyyml
+            pip3 install unittest-xml-reporting
+            pip3 install --user yamllint
+            npm install markdownlint-cli -g
+            npm install @prantlf/jsonlint -g
+            
 - stage: Build
   jobs:
   - job: BuildCode
