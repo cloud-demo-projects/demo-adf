@@ -1,0 +1,159 @@
+name: Azure Data Factory Deployment
+
+trigger:
+- none
+
+pool: Azure Pipelines
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildCode
+    displayName: Build code
+    steps:
+      - task: AzureCLI@2
+        name: BuildUserMIBicepCode
+        displayName: Build User Assigned Managed Identity Bicep code
+        condition: true
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az bicep build --file bicep/DataFactory/UserAssignedManagedIdentity.bicep
+
+      - task: AzureCLI@2
+        name: BuildADFBicepCode
+        displayName: Build ADF Bicep code
+        condition: false
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az bicep build --file bicep/DataFactory/DataFactory.bicep
+
+      - task: AzureCLI@2
+        name: BuildADFIRBicepCode
+        displayName: Build ADF IR Bicep code
+        condition: false
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az bicep build --file bicep/DataFactory/DataFactoryIR.bicep
+
+- stage: Validate
+  jobs:
+  - job: ValidateBicepCode
+    displayName: Validate Bicep code
+    steps:
+      - task: AzureCLI@2
+        condition: false
+        name: RunValidationUserAssignedIdentity
+        displayName: Run validation User Assigned Identity bicep code
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment group validate \
+              --resource-group $(ResourceGroupName) \
+              --template-file bicep/DataFactory/UserAssignedManagedIdentity.bicep \
+                    --parameters  identityName=$(identityName) 
+
+      - task: AzureCLI@2
+        condition: false
+        name: RunValidationADF
+        displayName: Run validation ADF bicep code
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment group validate \
+              --resource-group $(ResourceGroupName) \
+              --template-file bicep/DataFactory/DataFactory.bicep \
+                    --parameters  userManagedIdentity=$(userManagedIdentity) \
+                                  identityName=$(identityName) \
+                                  keyName=$(keyName) \
+                                  vaultBaseUrl=$(vaultBaseUrl) \
+                                  FactoryName=$(FactoryName) 
+
+      - task: AzureCLI@2
+        condition: false
+        name: RunValidationADFIR
+        displayName: Run validation ADF IR bicep code
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment group validate \
+              --resource-group $(resourceGroupName) \
+              --template-file bicep/DataFactory/DataFactoryIR.bicep \
+                  --parameters  FactoryName=$(FactoryName) \
+                                  irADFName=$(irADFName) 
+
+- stage: Deploy
+  jobs:
+  - deployment: DeployBicep
+    displayName: Deploy Bicep
+    environment: 'pbcrmdev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: AzureCLI@2
+              name: DeployUserAssignedManagedIdentityADF
+              displayName: Deploy User Assigned Manged Identity Bicep file
+              condition: false
+              inputs:
+                azureSubscription: $(azureServiceConnection)
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  deploymentOutput=$(az deployment group create \
+                        --name AppPLEdeployment --resource-group $(ResourceGroupName) \
+                        --template-file bicep/DataFactory/UserAssignedManagedIdentity.bicep \
+                              --parameters  identityName=$(identityName) )
+
+                  echo $deploymentOutput
+            - task: AzureCLI@2
+              name: DeployBicepFileADF
+              displayName: Deploy ADF Bicep file
+              condition: true
+              inputs:
+                azureSubscription: $(azureServiceConnection)
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  deploymentOutput=$(az deployment group create \
+                        --name AppPLEdeployment --resource-group $(ResourceGroupName) \
+                        --template-file bicep/DataFactory/DataFactory.bicep \
+                              --parameters  userManagedIdentity=$(userManagedIdentity) \
+                                  identityName=$(identityName) \
+                                  keyName=$(keyName) \
+                                  vaultBaseUrl=$(vaultBaseUrl) \
+                                  FactoryName=$(FactoryName) )
+
+                  echo $deploymentOutput
+
+            - task: AzureCLI@2
+              name: DeployBicepFileADFIR
+              displayName: Deploy ADF IR Bicep file
+              condition: false
+              inputs:
+                azureSubscription: $(azureServiceConnection)
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  deploymentOutput=$(az deployment group create \
+                        --name ADFIntegrationRuntime \
+                        --resource-group $(ResourceGroupName) \
+                        --template-file bicep/DataFactory/DataFactoryIR.bicep \
+                            --parameters  FactoryName=$(FactoryName) \
+                                  irADFName=$(irADFName) )
+
+                  echo $deploymentOutput
