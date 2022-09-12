@@ -3,6 +3,14 @@ name: Azure Data Factory Deployment
 trigger:
 - none
 
+parameters:
+- name: environment
+  displayName: Environment
+  default: d
+  
+variables:
+- template: iac/conf/${{ parameters.environment }}/variables.yaml
+
 pool: Azure Pipelines
 
 stages:
