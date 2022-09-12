@@ -55,7 +55,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            python3 demo-adf/iac/tests/python/test-iac.py
+            python3 tests/python/test-iac.py
 
       - task: PublishTestResults@2
         displayName: Publish Test Results
@@ -77,7 +77,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            find demo-adf/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
+            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
 
       - task: AzureCLI@2
         name: YMLLinter
