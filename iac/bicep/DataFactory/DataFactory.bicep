@@ -30,14 +30,14 @@ resource ADF 'Microsoft.DataFactory/factories@2018-06-01' = {
     }
   }
   properties: {
-    encryption: {
-      identity: {
-        userAssignedIdentity: '${userManagedIdentity}${identityName}'
-      }
-      vaultBaseUrl: vaultBaseUrl
-      keyName: keyName
-      keyVersion: keyVersion
-    }
+    //encryption: {
+      //identity: {
+        //userAssignedIdentity: '${userManagedIdentity}${identityName}'
+      //}
+      //vaultBaseUrl: vaultBaseUrl
+      //keyName: keyName
+      //keyVersion: keyVersion
+    //}
     publicNetworkAccess: 'Disabled'
   }
 }
