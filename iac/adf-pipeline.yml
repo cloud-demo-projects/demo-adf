@@ -20,7 +20,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az bicep build --file bicep/DataFactory/UserAssignedManagedIdentity.bicep
+            az bicep build --file iac/bicep/DataFactory/UserAssignedManagedIdentity.bicep
 
       - task: AzureCLI@2
         name: BuildADFBicepCode
@@ -31,7 +31,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az bicep build --file bicep/DataFactory/DataFactory.bicep
+            az bicep build --file iac/bicep/DataFactory/DataFactory.bicep
 
       - task: AzureCLI@2
         name: BuildADFIRBicepCode
@@ -42,7 +42,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az bicep build --file bicep/DataFactory/DataFactoryIR.bicep
+            az bicep build --file iac/bicep/DataFactory/DataFactoryIR.bicep
 
 - stage: Validate
   jobs:
@@ -60,7 +60,7 @@ stages:
           inlineScript: |
             az deployment group validate \
               --resource-group $(ResourceGroupName) \
-              --template-file bicep/DataFactory/UserAssignedManagedIdentity.bicep \
+              --template-file iac/bicep/DataFactory/UserAssignedManagedIdentity.bicep \
                     --parameters  identityName=$(identityName) 
 
       - task: AzureCLI@2
@@ -74,7 +74,7 @@ stages:
           inlineScript: |
             az deployment group validate \
               --resource-group $(ResourceGroupName) \
-              --template-file bicep/DataFactory/DataFactory.bicep \
+              --template-file iac/bicep/DataFactory/DataFactory.bicep \
                     --parameters  userManagedIdentity=$(userManagedIdentity) \
                                   identityName=$(identityName) \
                                   keyName=$(keyName) \
@@ -92,7 +92,7 @@ stages:
           inlineScript: |
             az deployment group validate \
               --resource-group $(resourceGroupName) \
-              --template-file bicep/DataFactory/DataFactoryIR.bicep \
+              --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
                   --parameters  FactoryName=$(FactoryName) \
                                   irADFName=$(irADFName) 
 
@@ -116,7 +116,7 @@ stages:
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
                         --name AppPLEdeployment --resource-group $(ResourceGroupName) \
-                        --template-file bicep/DataFactory/UserAssignedManagedIdentity.bicep \
+                        --template-file iac/bicep/DataFactory/UserAssignedManagedIdentity.bicep \
                               --parameters  identityName=$(identityName) )
 
                   echo $deploymentOutput
@@ -131,7 +131,7 @@ stages:
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
                         --name AppPLEdeployment --resource-group $(ResourceGroupName) \
-                        --template-file bicep/DataFactory/DataFactory.bicep \
+                        --template-file iac/bicep/DataFactory/DataFactory.bicep \
                               --parameters  userManagedIdentity=$(userManagedIdentity) \
                                   identityName=$(identityName) \
                                   keyName=$(keyName) \
@@ -152,7 +152,7 @@ stages:
                   deploymentOutput=$(az deployment group create \
                         --name ADFIntegrationRuntime \
                         --resource-group $(ResourceGroupName) \
-                        --template-file bicep/DataFactory/DataFactoryIR.bicep \
+                        --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
                             --parameters  FactoryName=$(FactoryName) \
                                   irADFName=$(irADFName) )
 
