@@ -20,3 +20,9 @@ class TestModule(unittest.TestCase):
 
         bicep_config_path = './{}/template/bicepconfig.json'.format(os.environ['BUILD_REPOSITORY_NAME'])
         self.assertTrue(os.path.exists(bicep_config_path), 'The bicepconfig.json file({}) should exists.'.format(bicep_config_path))
+        
+        
+if __name__ == '__main__':
+    unittest.main(
+        testRunner=xmlrunner.XMLTestRunner(output='dist/test-results'),
+        failfast=False, buffer=False, catchbreak=False) 
