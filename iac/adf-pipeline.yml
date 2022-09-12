@@ -55,7 +55,7 @@ stages:
           scriptLocation: 'inlineScript'
           inlineScript: |           
 
-            find ./$(Build.Repository.Name) -name '*.yml' -print0 | xargs -0 -n1 yamllint
+            find $(Build.Repository.Name) -name '*.yml' -print0 | xargs -0 -n1 yamllint
             
 # - stage: Build
 #   jobs:
