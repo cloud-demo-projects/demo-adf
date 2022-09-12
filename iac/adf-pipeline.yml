@@ -40,7 +40,7 @@ stages:
         displayName: Build ADF Bicep code
         condition: false
         inputs:
-          azureSubscription: $(azureSubscription)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
@@ -51,7 +51,7 @@ stages:
         displayName: Build ADF IR Bicep code
         condition: false
         inputs:
-          azureSubscription: $(azureSubscription)
+          azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
