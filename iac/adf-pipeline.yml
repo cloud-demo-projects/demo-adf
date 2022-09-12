@@ -7,6 +7,11 @@ parameters:
 - name: environment
   displayName: Environment
   default: d
+  values:
+  - d
+  - t
+  - a
+  - p
   
 variables:
 - template: iac/conf/${{ parameters.environment }}/variables.yaml
