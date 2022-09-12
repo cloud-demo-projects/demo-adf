@@ -1,7 +1,10 @@
 variables:
   azureServiceConnection: 'sub_sc'
   resourceGroupName: 'adf-demo'
-  templateFile: 'iac/main.bicep'
-  keyVaultName: 'fullstack-kv01'
-  sqlServerName: 'backend-dbserver'
-  sqlServerDBName: backend-db
+  templateFile: 'iac/bicep/main.bicep'
+  identityName: 'adf-umi'
+  keyName: 'adf-key'
+  vaultBaseUrl: 'adf-vaultUrl'
+  FactoryName: 'adf-demo'
+  irADFName: 'adf-irdemo'
+  
