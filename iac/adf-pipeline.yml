@@ -47,6 +47,17 @@ stages:
             npm install @prantlf/jsonlint -g
             
       - task: AzureCLI@2
+        name: JSONLinter
+        displayName: JSON Linter
+        condition: not(${{ parameters.inDevelopment }})
+        inputs:
+          azureSubscription: $(ResourceGroupName)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |            
+            find iac/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
+            
+      - task: AzureCLI@2
         name: YMLLinter
         displayName: YAML Linter
         inputs:
