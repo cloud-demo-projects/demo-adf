@@ -49,7 +49,7 @@ stages:
       - task: AzureCLI@2
         name: JSONLinter
         displayName: JSON Linter
-        condition: not(${{ parameters.inDevelopment }})
+        condition: true
         inputs:
           azureSubscription: $(ResourceGroupName)
           scriptType: 'bash'
