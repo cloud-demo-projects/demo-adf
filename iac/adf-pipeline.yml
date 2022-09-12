@@ -113,7 +113,7 @@ stages:
   jobs:
   - deployment: DeployBicep
     displayName: Deploy Bicep
-    environment: 'pbcrmdev'
+    environment: 'adf-dev'
     strategy:
       runOnce:
         deploy:
