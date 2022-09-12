@@ -28,8 +28,6 @@ stages:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
     steps:
-      - checkout: self
-
       - task: AzureCLI@2
         name: SetupAgentSoftwares
         displayName: "Setup agent softwares"
@@ -55,7 +53,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            python3 tests/python/test-iac.py
+            python3 iac/tests/python/test-iac.py
 
       - task: PublishTestResults@2
         displayName: Publish Test Results
@@ -77,7 +75,7 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
+            find iac/ -name '*.json' -print0 | xargs -0 -n1 jsonlint
 
       - task: AzureCLI@2
         name: YMLLinter
