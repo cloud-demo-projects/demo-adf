@@ -7,12 +7,12 @@ parameters:
   - name: Environment
     displayName: 'Environment'
     type: string
-    default: D
+    default: d
     values:
-      - D
-      - T
-      - A
-      - P
+      - d
+      - t
+      - a
+      - p
 
   - name: deployLinkedServices
     default: false
