@@ -19,14 +19,3 @@ stages:
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               OverWrite: true
-
-          - task: PublishBuildArtifacts@1
-            inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'adfArtifact'
-              publishLocation: 'Container'
-              
-          - task: tagBuildOrRelease@0
-            inputs:
-              type: 'Build'
-              tags: 'demo-adf-build'
