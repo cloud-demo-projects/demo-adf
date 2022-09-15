@@ -13,7 +13,11 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          FirstName as string,",
@@ -21,7 +25,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1"
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 filter(ERROR_FUNCTION('upper(FirstName) = __SINGLE_QUOTE__JOHN__SINGLE_QUOTE__')) ~> filter1"
 			]
 		}
 	}
