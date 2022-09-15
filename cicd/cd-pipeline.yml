@@ -34,16 +34,16 @@ parameters:
     values:
     - true
     - false
-    
+
   - name: enabletriggers
     default: false
     displayName: 'enable all triggers to running state'
     values:
     - true
     - false
-    
+
 variables:
-- template: conf/${{ parameters.environment }}/variables.yml
+- template: ../conf/${{ parameters.environment }}/variables.yml
 
 stages:
   - stage: LinkedService_Deploy
@@ -64,7 +64,7 @@ stages:
              downloadType: 'single'
              artifactName: '$(adfArtifactName)'
              downloadPath: '$(Pipeline.Workspace)/drop'
-             
+
          - task: qetza.replacetokens.replacetokens-task.replacetokens@5
            displayName: Replace Tokens with values from variable groups
            inputs:
@@ -80,7 +80,7 @@ stages:
              enableRecursion: false
              useLegacyPattern: false
              enableTelemetry: true
-             
+
          - task: deploy-adf-json@2
            displayName: Deploy keyVault LinkedService to ADF
            inputs:
@@ -89,7 +89,7 @@ stages:
             dataFactoryName: '$(adfName)'
             ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/SpirtKeyVaultLS.json'
             Sorting: 'ascending'
-            
+
          - task: deploy-adf-json@2
            displayName: Deploy Blob and FileShare LinkedService to ADF
            inputs:
@@ -98,7 +98,7 @@ stages:
             dataFactoryName: '$(adfName)'
             ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/'
             Sorting: 'ascending'
-            
+
   - stage: disable_Triggers
     displayName: disable_Triggers
     condition: eq('${{ parameters.disableTriggers }}', true)
@@ -112,10 +112,9 @@ stages:
               ScriptType: 'InlineScript'
               Inline: |
                 $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(ADFName) -ResourceGroupName $(resourceGroupName)
-                
                 $triggersADF | ForEach-Object { Stop-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -Name $_.name -Force }
               azurePowerShellVersion: 'LatestVersion'
-              
+
   - stage: DataSet_Pipeline_Trigger_Deploy
     displayName: DataSet_Pipeline_Trigger_Deploy
     condition: eq('${{ parameters.deploydatasetpipelinedefn }}', true)
@@ -134,7 +133,7 @@ stages:
              downloadType: 'single'
              artifactName: '$(adfArtifactName)'
              downloadPath: '$(Pipeline.Workspace)/drop'
-             
+
          - task: qetza.replacetokens.replacetokens-task.replacetokens@5
            displayName: Replace Tokens with values from variable groups
            inputs:
@@ -150,7 +149,7 @@ stages:
              enableRecursion: false
              useLegacyPattern: false
              enableTelemetry: true
-             
+
          - task: deploy-adf-json@2
            displayName: Deploy dataset and pipeline definitions and Triggers  to ADF
            inputs:
@@ -161,7 +160,7 @@ stages:
             PipelinePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/pipeline/'
             TriggerPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/trigger/'
             Sorting: 'ascending'
-            
+
   - stage: Enable_Triggers
     displayName: Enable_Triggers
     condition: eq('${{ parameters.enabletriggers }}', true)
