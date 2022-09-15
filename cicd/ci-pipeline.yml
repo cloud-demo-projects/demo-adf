@@ -1,243 +1,32 @@
-name: Azure Data Factory Deployment
+trigger: none
 
-trigger:
-- none
-
-parameters:
-- name: environment
-  displayName: Environment
-  default: d
-  values:
-  - d
-  - t
-  - a
-  - p
-
-variables:
-- template: conf/${{ parameters.environment }}/variables.yml
-
-pool: Azure Pipelines
+pool:
+    vmImage: 'ubuntu-latest'
 
 stages:
-- stage: StaticChecks
-  displayName: "Static Checks"
-  jobs:
-  - job: StaticValidation
-    displayName: Static validation
-    pool:
-      name: 'Azure Pipelines'
-      vmImage: 'ubuntu-latest'
-    steps:
-      - task: AzureCLI@2
-        name: SetupAgentSoftwares
-        displayName: "Setup agent softwares"
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            mkdir -p dist
-            mkdir -p dist/test-results
-            pip3 install pyyml
-            pip3 install unittest-xml-reporting
-            pip3 install --user yamllint
-            npm install markdownlint-cli -g
-            npm install @prantlf/jsonlint -g
+    - stage: CI_Build
+      jobs:
+      - job: CI
+        steps:
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)'
+              Contents: |
+                **/linkedService/template-json/*.json
+                **/dataset/template-json/*.json
+                **/pipeline/template-json/*.json
+                **/trigger/template-json/*.json
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+              CleanTargetFolder: true
+              OverWrite: true
 
-      - task: AzureCLI@2
-        name: GlobalTests
-        displayName: Run global tests
-        condition: true
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            python3 iac/tests/python/test-iac.py
-
-      - task: PublishTestResults@2
-        displayName: Publish Test Results
-        inputs:
-          testRunTitle: 'Global Module Tests'
-          testResultsFormat: JUnit
-          testResultsFiles: '*.xml'
-          failTaskOnFailedTests: true
-          searchFolder: 'dist/test-results'
-        continueOnError: false
-        condition: succeededOrFailed()
-
-      - task: AzureCLI@2
-        name: JSONLinter
-        displayName: JSON Linter
-        condition: true
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
-
-      - task: AzureCLI@2
-        name: YMLLinter
-        displayName: YAML Linter
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find iac/ -name '*.yml' -print0 | xargs -0 -n1 yamllint
-
-# - stage: Build
-#   jobs:
-#   - job: BuildCode
-#     displayName: Build code
-#     steps:
-#       - task: AzureCLI@2
-#         name: BuildUserMIBicepCode
-#         displayName: Build User Assigned Managed Identity Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/Umi.bicep
-
-#       - task: AzureCLI@2
-#         name: BuildADFBicepCode
-#         displayName: Build ADF Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/DataFactory.bicep
-
-#       - task: AzureCLI@2
-#         name: BuildADFIRBicepCode
-#         displayName: Build ADF IR Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/DataFactoryIR.bicep
-
-# - stage: Validate
-#   jobs:
-#   - job: ValidateBicepCode
-#     displayName: Validate Bicep code
-#     steps:
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationUserAssignedIdentity
-#         displayName: Run validation User Assigned Identity bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(ResourceGroupName) \
-#               --template-file iac/bicep/DataFactory/Umi.bicep \
-#                     --parameters  identityName=$(identityName) 
-
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationADF
-#         displayName: Run validation ADF bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(ResourceGroupName) \
-#               --template-file iac/bicep/DataFactory/DataFactory.bicep \
-#                     --parameters  userManagedIdentity=$(userManagedIdentity) \
-#                                   identityName=$(identityName) \
-#                                   keyName=$(keyName) \
-#                                   vaultBaseUrl=$(vaultBaseUrl) \
-#                                   FactoryName=$(FactoryName) 
-
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationADFIR
-#         displayName: Run validation ADF IR bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(resourceGroupName) \
-#               --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
-#                   --parameters  FactoryName=$(FactoryName) \
-#                                   irADFName=$(irADFName) 
-
-# - stage: Deploy
-#   jobs:
-#   - deployment: DeployBicep
-#     displayName: Deploy Bicep
-#     environment: 'd'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#             - checkout: self
-
-#             - task: AzureCLI@2
-#               name: DeployUmiADF
-#               displayName: Deploy User Assigned Manged Identity Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name AdfDeployment --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/Umi.bicep \
-#                               --parameters  identityName=$(identityName) )
-
-#                   echo $deploymentOutput
-
-#             - task: AzureCLI@2
-#               name: DeployBicepFileADF
-#               displayName: Deploy ADF Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name AdfDeployment --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/DataFactory.bicep \
-#                               --parameters  userManagedIdentity=$(userManagedIdentity) \
-#                                   identityName=$(identityName) \
-#                                   keyName=$(keyName) \
-#                                   vaultBaseUrl=$(vaultBaseUrl) \
-#                                   FactoryName=$(FactoryName) )
-
-#                   echo $deploymentOutput
-
-#             - task: AzureCLI@2
-#               name: DeployBicepFileADFIR
-#               displayName: Deploy ADF IR Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name ADFIntegrationRuntime \
-#                         --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
-#                             --parameters  FactoryName=$(FactoryName) \
-#                                   irADFName=$(irADFName) )
-
-#                   echo $deploymentOutput
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'adfArtifact'
+              publishLocation: 'Container'
+              
+          - task: tagBuildOrRelease@0
+            inputs:
+              type: 'Build'
+              tags: 'demo-adf-build'
