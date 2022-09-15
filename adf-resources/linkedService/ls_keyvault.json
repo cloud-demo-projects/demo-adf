@@ -1,0 +1,11 @@
+{
+	"name": "ls_keyvault",
+	"properties": {
+		"description": "keyvault linked service",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://demo-keyvault-adf.vault.azure.net/"
+		}
+	}
+}

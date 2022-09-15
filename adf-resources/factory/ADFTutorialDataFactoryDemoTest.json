@@ -1,0 +1,9 @@
+{
+	"name": "ADFTutorialDataFactoryDemoTest",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "03f2b6b0-2a0c-4777-a6bb-4a2ed392faa8",
+		"tenantId": "3a15904d-3fd9-4256-a753-beb05cdf0c6d"
+	}
+}
