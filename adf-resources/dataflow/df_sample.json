@@ -26,7 +26,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 filter(ERROR_FUNCTION('upper(FirstName) = __SINGLE_QUOTE__JOHN__SINGLE_QUOTE__')) ~> filter1"
+				"source1 filter(upper(FirstName) == 'JOHN') ~> filter1"
 			]
 		}
 	}
