@@ -1,243 +1,179 @@
-name: Azure Data Factory Deployment
+trigger: none
 
-trigger:
-- none
+pool:
+    vmImage: 'windows-latest'
 
 parameters:
-- name: environment
-  displayName: Environment
-  default: d
-  values:
-  - d
-  - t
-  - a
-  - p
+  - name: Environment
+    displayName: 'Environment'
+    type: string
+    default: D
+    values:
+      - D
+      - T
+      - A
+      - P
 
+  - name: deployLinkedServices
+    default: false
+    displayName: 'deploy LinkedServices to ADF instance'
+    values:
+    - true
+    - false
+
+  - name: disableTriggers
+    default: false
+    displayName: 'disable all triggers to running state'
+    values:
+    - true
+    - false
+
+  - name: deploydatasetpipelinedefn
+    default: false
+    displayName: 'deploy dataset, pipeline and trigger definitions to ADF instance'
+    values:
+    - true
+    - false
+    
+  - name: enabletriggers
+    default: false
+    displayName: 'enable all triggers to running state'
+    values:
+    - true
+    - false
+    
 variables:
 - template: conf/${{ parameters.environment }}/variables.yml
 
-pool: Azure Pipelines
-
 stages:
-- stage: StaticChecks
-  displayName: "Static Checks"
-  jobs:
-  - job: StaticValidation
-    displayName: Static validation
-    pool:
-      name: 'Azure Pipelines'
-      vmImage: 'ubuntu-latest'
-    steps:
-      - task: AzureCLI@2
-        name: SetupAgentSoftwares
-        displayName: "Setup agent softwares"
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            mkdir -p dist
-            mkdir -p dist/test-results
-            pip3 install pyyml
-            pip3 install unittest-xml-reporting
-            pip3 install --user yamllint
-            npm install markdownlint-cli -g
-            npm install @prantlf/jsonlint -g
-
-      - task: AzureCLI@2
-        name: GlobalTests
-        displayName: Run global tests
-        condition: true
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            python3 iac/tests/python/test-iac.py
-
-      - task: PublishTestResults@2
-        displayName: Publish Test Results
-        inputs:
-          testRunTitle: 'Global Module Tests'
-          testResultsFormat: JUnit
-          testResultsFiles: '*.xml'
-          failTaskOnFailedTests: true
-          searchFolder: 'dist/test-results'
-        continueOnError: false
-        condition: succeededOrFailed()
-
-      - task: AzureCLI@2
-        name: JSONLinter
-        displayName: JSON Linter
-        condition: true
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
-
-      - task: AzureCLI@2
-        name: YMLLinter
-        displayName: YAML Linter
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find iac/ -name '*.yml' -print0 | xargs -0 -n1 yamllint
-
-# - stage: Build
-#   jobs:
-#   - job: BuildCode
-#     displayName: Build code
-#     steps:
-#       - task: AzureCLI@2
-#         name: BuildUserMIBicepCode
-#         displayName: Build User Assigned Managed Identity Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/Umi.bicep
-
-#       - task: AzureCLI@2
-#         name: BuildADFBicepCode
-#         displayName: Build ADF Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/DataFactory.bicep
-
-#       - task: AzureCLI@2
-#         name: BuildADFIRBicepCode
-#         displayName: Build ADF IR Bicep code
-#         condition: true
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az bicep build --file iac/bicep/DataFactory/DataFactoryIR.bicep
-
-# - stage: Validate
-#   jobs:
-#   - job: ValidateBicepCode
-#     displayName: Validate Bicep code
-#     steps:
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationUserAssignedIdentity
-#         displayName: Run validation User Assigned Identity bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(ResourceGroupName) \
-#               --template-file iac/bicep/DataFactory/Umi.bicep \
-#                     --parameters  identityName=$(identityName) 
-
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationADF
-#         displayName: Run validation ADF bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(ResourceGroupName) \
-#               --template-file iac/bicep/DataFactory/DataFactory.bicep \
-#                     --parameters  userManagedIdentity=$(userManagedIdentity) \
-#                                   identityName=$(identityName) \
-#                                   keyName=$(keyName) \
-#                                   vaultBaseUrl=$(vaultBaseUrl) \
-#                                   FactoryName=$(FactoryName) 
-
-#       - task: AzureCLI@2
-#         condition: true
-#         name: RunValidationADFIR
-#         displayName: Run validation ADF IR bicep code
-#         inputs:
-#           azureSubscription: $(azureServiceConnection)
-#           scriptType: 'bash'
-#           scriptLocation: 'inlineScript'
-#           inlineScript: |
-#             az deployment group validate \
-#               --resource-group $(resourceGroupName) \
-#               --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
-#                   --parameters  FactoryName=$(FactoryName) \
-#                                   irADFName=$(irADFName) 
-
-# - stage: Deploy
-#   jobs:
-#   - deployment: DeployBicep
-#     displayName: Deploy Bicep
-#     environment: 'd'
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#             - checkout: self
-
-#             - task: AzureCLI@2
-#               name: DeployUmiADF
-#               displayName: Deploy User Assigned Manged Identity Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name AdfDeployment --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/Umi.bicep \
-#                               --parameters  identityName=$(identityName) )
-
-#                   echo $deploymentOutput
-
-#             - task: AzureCLI@2
-#               name: DeployBicepFileADF
-#               displayName: Deploy ADF Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name AdfDeployment --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/DataFactory.bicep \
-#                               --parameters  userManagedIdentity=$(userManagedIdentity) \
-#                                   identityName=$(identityName) \
-#                                   keyName=$(keyName) \
-#                                   vaultBaseUrl=$(vaultBaseUrl) \
-#                                   FactoryName=$(FactoryName) )
-
-#                   echo $deploymentOutput
-
-#             - task: AzureCLI@2
-#               name: DeployBicepFileADFIR
-#               displayName: Deploy ADF IR Bicep file
-#               condition: true
-#               inputs:
-#                 azureSubscription: $(azureServiceConnection)
-#                 scriptType: 'bash'
-#                 scriptLocation: 'inlineScript'
-#                 inlineScript: |
-#                   deploymentOutput=$(az deployment group create \
-#                         --name ADFIntegrationRuntime \
-#                         --resource-group $(ResourceGroupName) \
-#                         --template-file iac/bicep/DataFactory/DataFactoryIR.bicep \
-#                             --parameters  FactoryName=$(FactoryName) \
-#                                   irADFName=$(irADFName) )
-
-#                   echo $deploymentOutput
+  - stage: LinkedService_Deploy
+    displayName: LinkedService_Deploy
+    condition: eq('${{ parameters.deployLinkedServices }}', true)
+    jobs:
+      - job: LinkedService_Deploy
+        displayName: Deploy keyVault LinkedService to ADF instance
+        steps:
+         - task: DownloadBuildArtifacts@1
+           displayName: Download Build Artifacts to the Pipeline
+           inputs:
+             buildType: 'specific'
+             project: '$(buildProjID)'
+             pipeline: '$(adfbuildid)'
+             buildVersionToDownload: 'latest'
+             tags: 'demo-adf-build'
+             downloadType: 'single'
+             artifactName: '$(adfArtifactName)'
+             downloadPath: '$(Pipeline.Workspace)/drop'
+             
+         - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+           displayName: Replace Tokens with values from variable groups
+           inputs:
+             rootDirectory: '$(Pipeline.Workspace)/drop'
+             targetFiles: '**/*.json'
+             encoding: 'auto'
+             tokenPattern: 'default'
+             writeBOM: true
+             actionOnMissing: 'continue'
+             keepToken: false
+             actionOnNoFiles: 'continue'
+             enableTransforms: false
+             enableRecursion: false
+             useLegacyPattern: false
+             enableTelemetry: true
+             
+         - task: deploy-adf-json@2
+           displayName: Deploy keyVault LinkedService to ADF
+           inputs:
+            azureSubscription: '$(azureServiceConnection)'
+            resourceGroupName: '$(resourceGroupName)'
+            dataFactoryName: '$(adfName)'
+            ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/SpirtKeyVaultLS.json'
+            Sorting: 'ascending'
+            
+         - task: deploy-adf-json@2
+           displayName: Deploy Blob and FileShare LinkedService to ADF
+           inputs:
+            azureSubscription: '$(azureServiceConnection)'
+            resourceGroupName: '$(resourceGroupName)'
+            dataFactoryName: '$(adfName)'
+            ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/'
+            Sorting: 'ascending'
+            
+  - stage: disable_Triggers
+    displayName: disable_Triggers
+    condition: eq('${{ parameters.disableTriggers }}', true)
+    jobs:
+      - job: disableTriggers
+        steps:
+          - task: AzurePowerShell@5
+            displayName: disableTriggers
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              ScriptType: 'InlineScript'
+              Inline: |
+                $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(ADFName) -ResourceGroupName $(resourceGroupName)
+                
+                $triggersADF | ForEach-Object { Stop-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -Name $_.name -Force }
+              azurePowerShellVersion: 'LatestVersion'
+              
+  - stage: DataSet_Pipeline_Trigger_Deploy
+    displayName: DataSet_Pipeline_Trigger_Deploy
+    condition: eq('${{ parameters.deploydatasetpipelinedefn }}', true)
+    jobs:
+      - job: DataSet_Pipeline_Trigger_Deploy
+        displayName: Deploy DataSet and Pipeline and Trigger Definitions to ADF instance
+        steps:
+         - task: DownloadBuildArtifacts@1
+           displayName: Download Build Artifacts to the Pipeline
+           inputs:
+             buildType: 'specific'
+             project: '$(buildProjID)'
+             pipeline: '$(adfbuildid)'
+             buildVersionToDownload: 'latest'
+             tags: 'demo-adf-build'
+             downloadType: 'single'
+             artifactName: '$(adfArtifactName)'
+             downloadPath: '$(Pipeline.Workspace)/drop'
+             
+         - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+           displayName: Replace Tokens with values from variable groups
+           inputs:
+             rootDirectory: '$(Pipeline.Workspace)/drop'
+             targetFiles: '**/*.json'
+             encoding: 'auto'
+             tokenPattern: 'default'
+             writeBOM: true
+             actionOnMissing: 'continue'
+             keepToken: false
+             actionOnNoFiles: 'continue'
+             enableTransforms: false
+             enableRecursion: false
+             useLegacyPattern: false
+             enableTelemetry: true
+             
+         - task: deploy-adf-json@2
+           displayName: Deploy dataset and pipeline definitions and Triggers  to ADF
+           inputs:
+            azureSubscription: '$(azureServiceConnection)'
+            resourceGroupName: '$(resourceGroupName)'
+            dataFactoryName: '$(adfName)'
+            DatasetPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/dataset/'
+            PipelinePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/pipeline/'
+            TriggerPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/trigger/'
+            Sorting: 'ascending'
+            
+  - stage: Enable_Triggers
+    displayName: Enable_Triggers
+    condition: eq('${{ parameters.enabletriggers }}', true)
+    jobs:
+      - job: Enable_Triggers
+        steps:
+          - task: AzurePowerShell@5
+            displayName: Enable_Triggers
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              ScriptType: 'InlineScript'
+              Inline: |
+                $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(adfName) -ResourceGroupName $(resourceGroupName)
+                $triggersADF | ForEach-Object { Start-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -Name $_.name -Force }
+              azurePowerShellVersion: 'LatestVersion'
