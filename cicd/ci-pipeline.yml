@@ -12,10 +12,10 @@ stages:
             inputs:
               SourceFolder: '$(Build.SourcesDirectory)'
               Contents: |
-                **/linkedService/template-json/*.json
-                **/dataset/template-json/*.json
-                **/pipeline/template-json/*.json
-                **/trigger/template-json/*.json
+                **/linkedService/*.json
+                **/dataset/*.json
+                **/pipeline/*.json
+                **/trigger/*.json
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               OverWrite: true
