@@ -19,3 +19,9 @@ stages:
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               OverWrite: true
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'adfArtifact'
+              publishLocation: 'Container'
