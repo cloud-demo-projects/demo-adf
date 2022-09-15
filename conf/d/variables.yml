@@ -1,0 +1,5 @@
+variables:
+  subscriptionId: 'bf0f6779-86d2-467e-8226-10f92a8ad378'
+  azureServiceConnection: 'sub_sc'
+  resourceGroupName: 'adb-demo'
+  location: 'westeurope'
