@@ -1,5 +1,5 @@
 {
-    "name": "moving-blobs-pipeline",
+    "name": "moving_blob_pipeline",
     "properties": {
         "activities": [
             {
