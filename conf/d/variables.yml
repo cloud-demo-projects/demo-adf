@@ -9,3 +9,6 @@ variables:
   vaultBaseUrl: 'adf-vaultUrl'
   FactoryName: 'adf-demo3245'
   irADFName: 'adf-irdemo3245'
+
+  buildProjID: demo-adf
+  adfbuildid: ci-adf-pipeline
