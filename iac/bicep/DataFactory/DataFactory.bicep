@@ -25,19 +25,19 @@ resource ADF 'Microsoft.DataFactory/factories@2018-06-01' = {
   name: FactoryName
   location: location
     identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {'${userManagedIdentity}${identityName}': {}
-    }
+    type: 'SystemAssigned'
+    // userAssignedIdentities: {'${userManagedIdentity}${identityName}': {}
+    // }
   }
-  properties: {
-    //encryption: {
-      //identity: {
-        //userAssignedIdentity: '${userManagedIdentity}${identityName}'
-      //}
-      //vaultBaseUrl: vaultBaseUrl
-      //keyName: keyName
-      //keyVersion: keyVersion
-    //}
-    publicNetworkAccess: 'Disabled'
-  }
+  // properties: {
+  //   //encryption: {
+  //     //identity: {
+  //       //userAssignedIdentity: '${userManagedIdentity}${identityName}'
+  //     //}
+  //     //vaultBaseUrl: vaultBaseUrl
+  //     //keyName: keyName
+  //     //keyVersion: keyVersion
+  //   //}
+  //   publicNetworkAccess: 'Disabled'
+  // }
 }
