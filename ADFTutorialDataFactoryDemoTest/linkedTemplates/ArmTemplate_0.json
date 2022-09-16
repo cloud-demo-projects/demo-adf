@@ -30,10 +30,6 @@
 		"ls_keyvault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://demo-keyvault-adf.vault.azure.net/"
-		},
-		"trigger1_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/3a89d508-f992-4729-9058-ba4fae9a35ca/resourceGroups/sandbox-nl02918-1656933641-rg/providers/Microsoft.Storage/storageAccounts/containerappstoragedemo"
 		}
 	},
 	"variables": {
@@ -118,27 +114,6 @@
 				"type": "AzureKeyVault",
 				"typeProperties": {
 					"baseUrl": "[parameters('ls_keyvault_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/adf/blobs/output/",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('trigger1_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated",
-						"Microsoft.Storage.BlobDeleted"
-					]
 				}
 			},
 			"dependsOn": []

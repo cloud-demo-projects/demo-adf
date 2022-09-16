@@ -31,10 +31,6 @@
 			"type": "string",
 			"defaultValue": "https://demo-keyvault-adf.vault.azure.net/"
 		},
-		"trigger1_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/3a89d508-f992-4729-9058-ba4fae9a35ca/resourceGroups/sandbox-nl02918-1656933641-rg/providers/Microsoft.Storage/storageAccounts/containerappstoragedemo"
-		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -79,9 +75,6 @@
 					},
 					"ls_keyvault_properties_typeProperties_baseUrl": {
 						"value": "[parameters('ls_keyvault_properties_typeProperties_baseUrl')]"
-					},
-					"trigger1_properties_typeProperties_scope": {
-						"value": "[parameters('trigger1_properties_typeProperties_scope')]"
 					}
 				}
 			},
