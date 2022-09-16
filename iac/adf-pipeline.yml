@@ -204,9 +204,9 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
-                        --name AdfDeployment --resource-group $(ResourceGroupName) \
-                        --template-file iac/bicep/DataFactory/Umi.bicep \
-                              --parameters  identityName=$(identityName) )
+                  --name AdfDeployment --resource-group $(ResourceGroupName) \
+                  --template-file iac/bicep/DataFactory/Umi.bicep \
+                        --parameters  identityName=$(identityName) )
 
                   echo $deploymentOutput
 
@@ -220,13 +220,13 @@ stages:
                 scriptLocation: 'inlineScript'
                 inlineScript: |
                   deploymentOutput=$(az deployment group create \
-                        --name AdfDeployment --resource-group $(ResourceGroupName) \
-                        --template-file iac/bicep/DataFactory/DataFactory.bicep \
-                              --parameters  userManagedIdentity=$(userManagedIdentity) \
-                                  identityName=$(identityName) \
-                                  keyName=$(keyName) \
-                                  vaultBaseUrl=$(vaultBaseUrl) \
-                                  FactoryName=$(FactoryName) )
+                  --name AdfDeployment --resource-group $(ResourceGroupName) \
+                  --template-file iac/bicep/DataFactory/DataFactory.bicep \
+                  --parameters  userManagedIdentity=$(userManagedIdentity) \
+                      identityName=$(identityName) \
+                      keyName=$(keyName) \
+                      vaultBaseUrl=$(vaultBaseUrl) \
+                      FactoryName=$(FactoryName) )
 
                   echo $deploymentOutput
 
