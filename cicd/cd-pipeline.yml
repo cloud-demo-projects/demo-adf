@@ -119,7 +119,6 @@ stages:
              project: '$(buildProjID)'
              pipeline: '$(adfbuildid)'
              buildVersionToDownload: 'latest'
-             tags: 'demo-adf-build'
              downloadType: 'single'
              artifactName: '$(adfArtifactName)'
              downloadPath: '$(Pipeline.Workspace)/drop'
