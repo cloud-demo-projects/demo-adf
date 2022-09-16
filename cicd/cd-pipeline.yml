@@ -51,7 +51,7 @@ stages:
     condition: eq('${{ parameters.deployLinkedServices }}', true)
     jobs:
       - job: LinkedService_Deploy
-        displayName: Deploy LinkedServices to ADF instance
+        displayName: Deploy LinkedServices
         steps:
          - task: DownloadBuildArtifacts@1
            displayName: Download Build Artifacts to the Pipeline
@@ -65,7 +65,7 @@ stages:
              downloadPath: '$(Pipeline.Workspace)/drop'
 
          - task: qetza.replacetokens.replacetokens-task.replacetokens@5
-           displayName: Replace Tokens with values from variable groups
+           displayName: Replace Tokens
            inputs:
              rootDirectory: '$(Pipeline.Workspace)/drop'
              targetFiles: '**/*.json'
@@ -81,7 +81,7 @@ stages:
              enableTelemetry: true
 
          - task: deploy-adf-json@2
-           displayName: Deploy Blob and FileShare LinkedService to ADF
+           displayName: Deploy LinkedServices
            inputs:
             azureSubscription: '$(azureServiceConnection)'
             resourceGroupName: '$(resourceGroupName)'
@@ -89,8 +89,8 @@ stages:
             ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/'
             Sorting: 'ascending'
 
-  - stage: disable_Triggers
-    displayName: disable_Triggers
+  - stage: Disable_Triggers
+    displayName: Disable Triggers
     condition: eq('${{ parameters.disableTriggers }}', true)
     jobs:
       - job: disableTriggers
