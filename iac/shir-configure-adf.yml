@@ -89,4 +89,4 @@ steps:
   displayName: 'Enable only TLS 1.2 on SHIR'
   inputs:
     targetType: filePath
-    filePath: './scripts/EnableTLS1_2.ps1'
+    filePath: './scripts/EnableTLS.ps1'
