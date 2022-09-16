@@ -16,6 +16,7 @@ stages:
                 **/dataset/*.json
                 **/pipeline/*.json
                 **/trigger/*.json
+                **/dataflow/*.json
               TargetFolder: '$(Build.ArtifactStagingDirectory)'
               CleanTargetFolder: true
               OverWrite: true
