@@ -146,6 +146,7 @@ stages:
             resourceGroupName: '$(resourceGroupName)'
             dataFactoryName: '$(FactoryName)'
             DatasetPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/dataset/'
+            DataflowPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/dataflow/'
             PipelinePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/pipeline/'
             TriggerPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/trigger/'
             Sorting: 'ascending'
