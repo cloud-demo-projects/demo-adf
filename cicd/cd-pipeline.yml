@@ -80,14 +80,14 @@ stages:
              useLegacyPattern: false
              enableTelemetry: true
 
-         - task: deploy-adf-json@2
-           displayName: Deploy keyVault LinkedService to ADF
-           inputs:
-            azureSubscription: '$(azureServiceConnection)'
-            resourceGroupName: '$(resourceGroupName)'
-            dataFactoryName: '$(adfName)'
-            ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/SpirtKeyVaultLS.json'
-            Sorting: 'ascending'
+        #  - task: deploy-adf-json@2
+        #    displayName: Deploy keyVault LinkedService to ADF
+        #    inputs:
+        #     azureSubscription: '$(azureServiceConnection)'
+        #     resourceGroupName: '$(resourceGroupName)'
+        #     dataFactoryName: '$(adfName)'
+        #     ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/SpirtKeyVaultLS.json'
+        #     Sorting: 'ascending'
 
          - task: deploy-adf-json@2
            displayName: Deploy Blob and FileShare LinkedService to ADF
