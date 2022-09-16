@@ -246,3 +246,11 @@ stages:
                             --parameters  FactoryName=$(FactoryName) \
                                   irADFName=$(irADFName) )
                   echo $deploymentOutput
+                  
+             - task: AzurePowerShell@5
+              displayName: 'Create Self Hosted IR'
+              inputs:
+                azureSubscription: ${{ parameters.ServiceConnectionName }}
+                ScriptType: InlineScript
+                Inline: 'Set-AzDataFactoryV2IntegrationRuntime -ResourceGroupName ${{ parameters.ResourceGroupName }} -DataFactoryName  ${{ parameters.DataFactoryName }} -Name  ${{ parameters.SelfHostedIntegrationRuntimeName }} -Type SelfHosted -Description " ${{ parameters.SelfHostedDescription }}" -Confirm:$false -Force'
+                azurePowerShellVersion: LatestVersion
