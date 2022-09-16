@@ -87,7 +87,9 @@ stages:
         continueOnError: false
         condition: succeededOrFailed()
 
-- stage: Build
+- stage: BuildADF
+  displayName: Build ADF
+  dependsOn: StaticChecks
   jobs:
   - job: BuildCode
     displayName: Build code
@@ -126,6 +128,8 @@ stages:
             az bicep build --file iac/bicep/DataFactory/DataFactoryIR.bicep
 
 - stage: Validate
+  displayName: Validate ADF
+  dependsOn: BuildADF
   jobs:
   - job: ValidateBicepCode
     displayName: Validate Bicep code
@@ -178,6 +182,8 @@ stages:
                                   irADFName=$(irADFName)
 
 - stage: Deploy
+  displayName: Deploy ADF
+  dependsOn: Validate
   jobs:
   - deployment: DeployBicep
     displayName: Deploy Bicep
