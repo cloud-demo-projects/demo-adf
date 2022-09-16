@@ -41,3 +41,15 @@ resource ADF 'Microsoft.DataFactory/factories@2018-06-01' = {
   //   publicNetworkAccess: 'Disabled'
   // }
 }
+
+@description('The Name of the Azure Data Factory instance.')
+output name string = ADF.name
+
+@description('The Resource ID of the Data factory.')
+output resourceId string = ADF.id
+
+@description('The name of the Resource Group with the Data factory.')
+output resourceGroupName string = resourceGroup().name
+
+@description('The location the resource was deployed into.')
+output location string = ADF.location
