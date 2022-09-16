@@ -51,7 +51,7 @@ stages:
     condition: eq('${{ parameters.deployLinkedServices }}', true)
     jobs:
       - job: LinkedService_Deploy
-        displayName: Deploy keyVault LinkedService to ADF instance
+        displayName: Deploy LinkedServices to ADF instance
         steps:
          - task: DownloadBuildArtifacts@1
            displayName: Download Build Artifacts to the Pipeline
@@ -80,21 +80,12 @@ stages:
              useLegacyPattern: false
              enableTelemetry: true
 
-        #  - task: deploy-adf-json@2
-        #    displayName: Deploy keyVault LinkedService to ADF
-        #    inputs:
-        #     azureSubscription: '$(azureServiceConnection)'
-        #     resourceGroupName: '$(resourceGroupName)'
-        #     dataFactoryName: '$(adfName)'
-        #     ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/SpirtKeyVaultLS.json'
-        #     Sorting: 'ascending'
-
          - task: deploy-adf-json@2
            displayName: Deploy Blob and FileShare LinkedService to ADF
            inputs:
             azureSubscription: '$(azureServiceConnection)'
             resourceGroupName: '$(resourceGroupName)'
-            dataFactoryName: '$(adfName)'
+            dataFactoryName: '$(FactoryName)'
             ServicePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/linkedService/'
             Sorting: 'ascending'
 
@@ -111,7 +102,7 @@ stages:
               ScriptType: 'InlineScript'
               Inline: |
                 $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(ADFName) -ResourceGroupName $(resourceGroupName)
-                $triggersADF | ForEach-Object { Stop-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -Name $_.name -Force }
+                $triggersADF | ForEach-Object { Stop-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(FactoryName) -Name $_.name -Force }
               azurePowerShellVersion: 'LatestVersion'
 
   - stage: DataSet_Pipeline_Trigger_Deploy
@@ -154,7 +145,7 @@ stages:
            inputs:
             azureSubscription: '$(azureServiceConnection)'
             resourceGroupName: '$(resourceGroupName)'
-            dataFactoryName: '$(adfName)'
+            dataFactoryName: '$(FactoryName)'
             DatasetPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/dataset/'
             PipelinePath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/pipeline/'
             TriggerPath: '$(Pipeline.Workspace)/drop/$(adfArtifactName)/adf-resources/trigger/'
@@ -172,6 +163,6 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               ScriptType: 'InlineScript'
               Inline: |
-                $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(adfName) -ResourceGroupName $(resourceGroupName)
-                $triggersADF | ForEach-Object { Start-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -Name $_.name -Force }
+                $triggersADF = Get-AzDataFactoryV2Trigger -DataFactoryName $(FactoryName) -ResourceGroupName $(resourceGroupName)
+                $triggersADF | ForEach-Object { Start-AzDataFactoryV2Trigger -ResourceGroupName $(resourceGroupName) -DataFactoryName $(FactoryName) -Name $_.name -Force }
               azurePowerShellVersion: 'LatestVersion'
