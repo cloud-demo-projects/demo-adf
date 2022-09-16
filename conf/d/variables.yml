@@ -12,3 +12,4 @@ variables:
 
   buildProjID: demo-adf
   adfbuildid: ci-adf-pipeline
+  adfArtifactName: adfArtifact
