@@ -14,7 +14,7 @@ parameters:
   - p
 
 variables:
-- template: conf/${{ parameters.environment }}/variables.yml
+- template: ../conf/${{ parameters.environment }}/variables.yml
 
 pool: Azure Pipelines
 
@@ -45,6 +45,27 @@ stages:
             npm install @prantlf/jsonlint -g
 
       - task: AzureCLI@2
+        name: JSONLinter
+        displayName: JSON Linter
+        condition: true
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
+
+      - task: AzureCLI@2
+        name: YMLLinter
+        displayName: YAML Linter
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            find iac/ -name '*.yml' -print0 | xargs -0 -n1 yamllint
+
+      - task: AzureCLI@2
         name: GlobalTests
         displayName: Run global tests
         condition: true
@@ -65,27 +86,6 @@ stages:
           searchFolder: 'dist/test-results'
         continueOnError: false
         condition: succeededOrFailed()
-
-      - task: AzureCLI@2
-        name: JSONLinter
-        displayName: JSON Linter
-        condition: true
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find ../ -name '*.json' -print0 | xargs -0 -n1 jsonlint
-
-      - task: AzureCLI@2
-        name: YMLLinter
-        displayName: YAML Linter
-        inputs:
-          azureSubscription: $(azureServiceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            find iac/ -name '*.yml' -print0 | xargs -0 -n1 yamllint
 
 # - stage: Build
 #   jobs:
