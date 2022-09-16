@@ -58,6 +58,7 @@ stages:
       - task: AzureCLI@2
         name: YMLLinter
         displayName: YAML Linter
+        continueOnError: true
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: 'bash'
