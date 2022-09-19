@@ -17,11 +17,17 @@
 		"ls_databricks_accessToken": {
 			"value": ""
 		},
+		"ls_AzureFunction_functionKey": {
+			"value": ""
+		},
 		"ls_adls_properties_typeProperties_url": {
 			"value": "https://adlssac.dfs.core.windows.net/"
 		},
 		"ls_keyvault_properties_typeProperties_baseUrl": {
 			"value": "https://demo-keyvault-adf.vault.azure.net/"
+		},
+		"ls_AzureFunction_properties_typeProperties_functionAppUrl": {
+			"value": "https://demo-funapp321.azurewebsites.net"
 		},
 		"containerUri": {
 			"value": ""

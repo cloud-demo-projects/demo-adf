@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'ls_databricks'"
 		},
+		"ls_AzureFunction_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'ls_AzureFunction'"
+		},
 		"ls_adls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adlssac.dfs.core.windows.net/"
@@ -30,6 +34,10 @@
 		"ls_keyvault_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://demo-keyvault-adf.vault.azure.net/"
+		},
+		"ls_AzureFunction_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://demo-funapp321.azurewebsites.net"
 		},
 		"containerUri": {
 			"type": "string",
@@ -70,11 +78,17 @@
 					"ls_databricks_accessToken": {
 						"value": "[parameters('ls_databricks_accessToken')]"
 					},
+					"ls_AzureFunction_functionKey": {
+						"value": "[parameters('ls_AzureFunction_functionKey')]"
+					},
 					"ls_adls_properties_typeProperties_url": {
 						"value": "[parameters('ls_adls_properties_typeProperties_url')]"
 					},
 					"ls_keyvault_properties_typeProperties_baseUrl": {
 						"value": "[parameters('ls_keyvault_properties_typeProperties_baseUrl')]"
+					},
+					"ls_AzureFunction_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('ls_AzureFunction_properties_typeProperties_functionAppUrl')]"
 					}
 				}
 			},
