@@ -36,31 +36,6 @@ steps:
    Install-Module -Name Az -AllowClobber -Force -Confirm:$false
   displayName: 'Download and Install AZ Module'
 
-- powershell: |
-   # Register SHIR against Data Factory  
-   $keyReg = Get-Item "hklm:\Software\Microsoft\DataTransfer\DataManagementGateway\ConfigurationManager"
-   $filePath = $keyReg.GetValue("DiacmdPath")
-   $basePath = $filePath.Substring(0, $filePath.lastIndexOf("\"))
-   [Array]$paths = "$basePath\diahost.exe.config", "$basePath\diawp.exe.config"
-   
-   ForEach ($path In $paths) {
-       [xml]$doc = Get-Content $path
-       $doc.configuration.'system.net'.defaultProxy.SetAttribute("enabled", "true")
-       $doc.configuration.'system.net'.defaultProxy.RemoveAttribute("useDefaultCredentials")
-       Try {
-           $old = $doc.SelectSingleNode("/configuration/system.net/defaultProxy/proxy")
-           $parent = $old.ParentNode
-           [void] $parent.RemoveChild($old)
-       } Catch { }
-       $proxy = $doc.CreateNode("element","proxy","")
-       $proxy.SetAttribute("autoDetect", "true")
-       $proxy.SetAttribute("bypassonlocal", "true")
-       $proxy.SetAttribute("proxyaddress", "http://nl-proxy-access.net.abnamro.com:8080/")
-       $doc.configuration.'system.net'.defaultProxy.AppendChild($proxy)
-       $doc.Save($path)
-   }
-  displayName: 'Set SHIR Proxy'
-
 - task: AzurePowerShell@5
   displayName: 'Get a self-hosted IR authentication key'
   inputs:
@@ -89,4 +64,4 @@ steps:
   displayName: 'Enable only TLS 1.2 on SHIR'
   inputs:
     targetType: filePath
-    filePath: './scripts/EnableTLS1_2.ps1'
+    filePath: './scripts/EnableTLS.ps1'

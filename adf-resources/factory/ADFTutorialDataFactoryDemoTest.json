@@ -1,5 +1,13 @@
 {
 	"name": "ADFTutorialDataFactoryDemoTest",
+	"properties": {
+		"globalParameters": {
+			"environment": {
+				"type": "string",
+				"value": "dev"
+			}
+		}
+	},
 	"location": "westeurope",
 	"identity": {
 		"type": "SystemAssigned",

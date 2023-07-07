@@ -1,0 +1,19 @@
+{
+	"name": "azfunction_trigger",
+	"properties": {
+		"description": "trigger to call azure function;",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 24,
+				"startTime": "2022-09-19T09:07:00Z",
+				"endTime": "2022-09-30T00:07:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
