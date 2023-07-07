@@ -1,5 +1,5 @@
 variables:
-  azureServiceConnection: 'sub-sc'
+  azureServiceConnection: 'sub_sc'
   resourceGroupName: 'adf-demo'
   FactoryName: 'adf-demo3245'
   templateFile: 'iac/bicep/main.bicep'
