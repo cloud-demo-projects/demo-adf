@@ -248,9 +248,9 @@ stages:
                   echo $deploymentOutput
 
             - task: AzurePowerShell@5
-            displayName: 'Create Self Hosted IR'
-            inputs:
-              azureSubscription: ${{ parameters.ServiceConnectionName }}
-              ScriptType: InlineScript
-              Inline: 'Set-AzDataFactoryV2IntegrationRuntime -ResourceGroupName $(ResourceGroupName) -DataFactoryName  $(resourceGroupName) -Name $(irADFName) -Type SelfHosted -Description "SHIR" -Confirm:$false -Force'
-              azurePowerShellVersion: LatestVersion
+              displayName: 'Create Self Hosted IR'
+              inputs:
+                azureSubscription: ${{ parameters.ServiceConnectionName }}
+                ScriptType: InlineScript
+                Inline: 'Set-AzDataFactoryV2IntegrationRuntime -ResourceGroupName $(ResourceGroupName) -DataFactoryName  $(resourceGroupName) -Name $(irADFName) -Type SelfHosted -Description "SHIR" -Confirm:$false -Force'
+                azurePowerShellVersion: LatestVersion
