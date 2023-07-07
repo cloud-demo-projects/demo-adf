@@ -16,7 +16,7 @@ parameters:
 variables:
 - template: ../conf/${{ parameters.environment }}/variables.yml
 
-pool: Azure Pipelines
+#pool: Azure Pipelines
 
 stages:
 - stage: StaticChecks
