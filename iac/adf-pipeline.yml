@@ -250,7 +250,7 @@ stages:
             - task: AzurePowerShell@5
               displayName: 'Create Self Hosted IR'
               inputs:
-                azureSubscription: ${{ parameters.ServiceConnectionName }}
+                azureSubscription: $(azureServiceConnection)
                 ScriptType: InlineScript
                 Inline: 'Set-AzDataFactoryV2IntegrationRuntime -ResourceGroupName $(ResourceGroupName) -DataFactoryName  $(resourceGroupName) -Name $(irADFName) -Type SelfHosted -Description "SHIR" -Confirm:$false -Force'
                 azurePowerShellVersion: LatestVersion
